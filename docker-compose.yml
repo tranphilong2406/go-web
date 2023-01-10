@@ -1,0 +1,11 @@
+services:
+  database:
+    image: mysql:8.0
+    ports:
+      - "33063:3306"
+    environment:
+      MYSQL_DATABASE: quiz-db
+      MYSQL_HOST: mysql
+      MYSQL_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: "123456"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
