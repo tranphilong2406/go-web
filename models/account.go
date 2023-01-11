@@ -26,7 +26,7 @@ type CustomValidator struct {
 func SaveAccount(account Account) error {
 	db, err := sql.Open("mysql", os.Getenv("DB_CONNECTION"))
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	defer db.Close()
