@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"go-web-server/models"
@@ -15,8 +14,6 @@ func SignIn(c echo.Context) error {
 
 	email := c.FormValue("email")
 	password := c.FormValue("password")
-
-	fmt.Println(email)
 
 	myAccount, err := models.GetAccount(email)
 
