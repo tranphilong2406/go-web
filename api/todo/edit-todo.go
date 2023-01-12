@@ -1,7 +1,6 @@
 package todo
 
 import (
-	"fmt"
 	"github.com/labstack/echo/v4"
 	"go-web-server/models"
 	"net/http"
@@ -9,18 +8,20 @@ import (
 )
 
 func EditTodo(c echo.Context) error {
-	req := make(map[string]string)
+	req := c.Param("id")
+	id, _ := strconv.Atoi(req)
+	var myTodo models.Todo
 
-	if err := c.Bind(&req); err != nil {
+	if err := c.Bind(&myTodo); err != nil {
 		return c.JSON(http.StatusBadRequest, "Can not bind data!")
 	}
 
-	id, _ := strconv.Atoi(req["id"])
+	myTodo.ID = id
 
-	todo := models.Todo{
-		ID:   id,
-		Name: req["name"],
+	ok := models.EditTodo(myTodo)
+	if ok != nil {
+		return c.JSON(http.StatusBadRequest, "Can not edit todo!")
 	}
-	fmt.Println(todo)
-	return nil
+
+	return c.JSON(http.StatusOK, "Update todo successfully!")
 }

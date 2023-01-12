@@ -12,5 +12,9 @@ func GetListTodo(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "Can not get list todos!")
 	}
 
+	if len(todos) == 0 {
+		return c.JSON(http.StatusOK, "You don't have any todo! Add some more")
+	}
+
 	return c.JSONPretty(http.StatusOK, todos, "  ")
 }
