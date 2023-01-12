@@ -3,12 +3,13 @@ package models
 import (
 	"database/sql"
 	"os"
+	"time"
 )
 
 type Todo struct {
 	ID        int    `json:"id"`
 	Name      string `json:"name"`
-	isDone    bool   `json:"is-done"`
+	IsDone    int    `json:"is-done"`
 	CreatedAt string `json:"created-at"`
 	UpdatedAt string `json:"updated-at"`
 }
@@ -19,8 +20,10 @@ func CreateTodo(todo Todo) error {
 		return err
 	}
 	defer db.Close()
+	currentTime := time.Now().String()
+	timeTrim := timeConvert(currentTime)
 
-	insert, ok := db.Query("INSERT INTO `quiz-db`.`to-do`(name, isdone, created_at,updated_at) values (?,?,?,?)", todo.Name, 1, timeTrim, timeTrim)
+	insert, ok := db.Query("INSERT INTO `quiz-db`.`to-do`(name, isdone, created_at,updated_at) values (?,?,?,?)", todo.Name, 0, timeTrim, timeTrim)
 	if ok != nil {
 		return ok
 	}
@@ -38,7 +41,7 @@ func CheckExist(todo Todo) bool {
 
 	var myTodo Todo
 
-	err = db.QueryRow("SELECT * FROM `quiz-db`.`to-do` WHERE name = ?", todo.Name).Scan(&myTodo.ID, &myTodo.Name, &myTodo.isDone, &myTodo.CreatedAt, &myTodo.UpdatedAt)
+	err = db.QueryRow("SELECT * FROM `quiz-db`.`to-do` WHERE name = ?", todo.Name).Scan(&myTodo.ID, &myTodo.Name, &myTodo.IsDone, &myTodo.CreatedAt, &myTodo.UpdatedAt)
 	if err != nil {
 		return false
 	}
@@ -61,7 +64,7 @@ func GetAllTodo() ([]Todo, error) {
 
 	for result.Next() {
 		var todo Todo
-		er := result.Scan(&todo.ID, &todo.Name, &todo.isDone, &todo.CreatedAt, &todo.UpdatedAt)
+		er := result.Scan(&todo.ID, &todo.Name, &todo.IsDone, &todo.CreatedAt, &todo.UpdatedAt)
 		if er != nil {
 			return nil, er
 		}
@@ -78,12 +81,59 @@ func GetTodoById(id int) (Todo, error) {
 		return todo, err
 	}
 	defer db.Close()
-	err = db.QueryRow("SELECT * FROM `quiz-db`.`to-do` WHERE id = ?", id).Scan(&todo.ID, &todo.Name, &todo.isDone, &todo.CreatedAt, &todo.UpdatedAt)
+	err = db.QueryRow("SELECT * FROM `quiz-db`.`to-do` WHERE id = ?", id).Scan(&todo.ID, &todo.Name, &todo.IsDone, &todo.CreatedAt, &todo.UpdatedAt)
 
 	if err != nil {
 		return todo, err
 	}
 
 	return todo, nil
+}
 
+func CheckIsDone(id int) error {
+	db, err := sql.Open("mysql", os.Getenv("DB_CONNECTION"))
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+	currentTime := time.Now().String()
+	timeTrim := timeConvert(currentTime)
+
+	_, ok := db.Query("UPDATE `quiz-db`.`to-do` SET isdone = 1, updated_at = ? WHERE id = ?", timeTrim, id)
+	if ok != nil {
+		return ok
+	}
+
+	return nil
+}
+
+func DeleteTodo(id int) error {
+	db, err := sql.Open("mysql", os.Getenv("DB_CONNECTION"))
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	_, ok := db.Query("DELETE FROM `quiz-db`.`to-do` WHERE id = ?", id)
+	if ok != nil {
+		return ok
+	}
+	return nil
+}
+
+func EditTodo(todo Todo) error {
+	db, err := sql.Open("mysql", os.Getenv("DB_CONNECTION"))
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	currentTime := time.Now().String()
+	timeTrim := timeConvert(currentTime)
+
+	_, ok := db.Query("UPDATE `quiz-db`.`to-do`SET name = ?, updated_at = ? WHERE id = ?", todo.Name, timeTrim, todo.ID)
+	if ok != nil {
+		return ok
+	}
+	return nil
 }

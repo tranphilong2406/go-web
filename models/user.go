@@ -17,11 +17,6 @@ type User struct {
 	Status    int    `json:"status"`
 }
 
-var (
-	currentTime = time.Now().String()
-	timeTrim    = timeConvert(currentTime)
-)
-
 func SaveUser(user User) error {
 	db, err := sql.Open("mysql", os.Getenv("DB_CONNECTION"))
 	if err != nil {
@@ -29,6 +24,8 @@ func SaveUser(user User) error {
 	}
 
 	defer db.Close()
+	currentTime := time.Now().String()
+	timeTrim := timeConvert(currentTime)
 
 	query := fmt.Sprintf("insert into `quiz-db`.users(username,email,created_at,updated_at,status) values(\"%s\",\"%s\",\"%s\",\"%s\",%d)", user.Username, user.Email, timeTrim, timeTrim, user.Status)
 
@@ -82,6 +79,8 @@ func UpdateUser(user User) error {
 	}
 
 	defer db.Close()
+	currentTime := time.Now().String()
+	timeTrim := timeConvert(currentTime)
 
 	_, err = db.Query("update `quiz-db`.users set username = ? , updated_at = ? where id = ?", user.Username, timeTrim, user.ID)
 
