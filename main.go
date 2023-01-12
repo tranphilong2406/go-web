@@ -20,8 +20,10 @@ func main() {
 
 	e.GET("/get-user/:id", middlewares.TokenHandle(api.GetUser))
 	e.POST("/add-todo", middlewares.TokenHandle(todo.AddTodo))
-	e.POST("/edit-todo", middlewares.TokenHandle(todo.EditTodo))
+	e.PUT("/edit-todo/:id", middlewares.TokenHandle(todo.EditTodo))
 	e.GET("/get-list-todo", middlewares.TokenHandle(todo.GetListTodo))
-	e.GET("/get-todo/:id", todo.GetTodo)
+	e.GET("/get-todo/:id", middlewares.TokenHandle(todo.GetTodo))
+	e.PUT("/check-done/:id", middlewares.TokenHandle(todo.CheckDone))
+	e.DELETE("/delete-todo/:id", middlewares.TokenHandle(todo.DeleteTodo))
 	e.Logger.Fatal(e.Start(":8080"))
 }
