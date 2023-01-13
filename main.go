@@ -12,7 +12,7 @@ import (
 func main() {
 	e := echo.New()
 	e.GET("/", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, "Hello world")
+		return c.HTML(http.StatusOK, "<center><h1>Welcome!</h1></center>")
 	})
 	e.POST("/sign-in", auth.SignIn)
 	e.POST("/sign-up", auth.SignUp)
