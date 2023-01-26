@@ -20,10 +20,8 @@ func CreateTodo(todo Todo) error {
 		return err
 	}
 	defer db.Close()
-	currentTime := time.Now().String()
-	timeTrim := timeConvert(currentTime)
 
-	insert, ok := db.Query("INSERT INTO `quiz-db`.`to-do`(name, isdone, created_at,updated_at) values (?,?,?,?)", todo.Name, 0, timeTrim, timeTrim)
+	insert, ok := db.Query("INSERT INTO `quiz-db`.`to-do`(name, isdone, created_at,updated_at) values (?,?,?,?)", todo.Name, 0, time.Now().Format(time.RFC3339), time.Now().Format(time.RFC3339))
 	if ok != nil {
 		return ok
 	}
@@ -57,7 +55,7 @@ func GetAllTodo() ([]Todo, error) {
 
 	var todos []Todo
 
-	result, ok := db.Query("SELECT * FROM `quiz-db`.`to-do` WHERE isdone = 1")
+	result, ok := db.Query("SELECT * FROM `quiz-db`.`to-do` WHERE isdone = 0")
 	if ok != nil {
 		return nil, ok
 	}
@@ -96,10 +94,8 @@ func CheckIsDone(id int) error {
 		return err
 	}
 	defer db.Close()
-	currentTime := time.Now().String()
-	timeTrim := timeConvert(currentTime)
 
-	_, ok := db.Query("UPDATE `quiz-db`.`to-do` SET isdone = 1, updated_at = ? WHERE id = ?", timeTrim, id)
+	_, ok := db.Query("UPDATE `quiz-db`.`to-do` SET isdone = 1, updated_at = ? WHERE id = ?", time.Now().Format(time.RFC3339), id)
 	if ok != nil {
 		return ok
 	}
@@ -128,10 +124,7 @@ func EditTodo(todo Todo) error {
 	}
 	defer db.Close()
 
-	currentTime := time.Now().String()
-	timeTrim := timeConvert(currentTime)
-
-	_, ok := db.Query("UPDATE `quiz-db`.`to-do`SET name = ?, updated_at = ? WHERE id = ?", todo.Name, timeTrim, todo.ID)
+	_, ok := db.Query("UPDATE `quiz-db`.`to-do`SET name = ?, updated_at = ? WHERE id = ?", todo.Name, time.Now().Format(time.RFC3339), todo.ID)
 	if ok != nil {
 		return ok
 	}

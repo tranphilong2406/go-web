@@ -3,10 +3,10 @@ package models
 import (
 	"database/sql"
 	"fmt"
-	"github.com/go-playground/validator"
-	_ "github.com/go-sql-driver/mysql"
 	"os"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type Account struct {
@@ -19,10 +19,6 @@ type Account struct {
 	UpdatedAt string `json:"updated_at"`
 }
 
-type CustomValidator struct {
-	validator *validator.Validate
-}
-
 func SaveAccount(account Account) error {
 	db, err := sql.Open("mysql", os.Getenv("DB_CONNECTION"))
 	if err != nil {
@@ -31,13 +27,9 @@ func SaveAccount(account Account) error {
 
 	defer db.Close()
 
-	currentTime := time.Now().String()
-
-	timeTrim := timeConvert(currentTime)
-	query := fmt.Sprintf("insert into `quiz-db`.accounts(email,password,user_id,status,created_at,updated_at) values(\"%s\",\"%s\",%d,%d,\"%s\",\"%s\")", account.Email, account.Password, account.UserID, account.Status, timeTrim, timeTrim)
-
-	insert, err := db.Query(query)
-	if err != nil {
+	query := fmt.Sprintf("insert into `quiz-db`.accounts(email,password,user_id,status,created_at,updated_at) values(\"%s\",\"%s\",%d,%d,\"%s\",\"%s\")", account.Email, account.Password, account.UserID, account.Status, time.Now().Format(time.RFC3339), time.Now().Format(time.RFC3339))
+	insert, e := db.Query(query)
+	if e != nil {
 		return err
 	}
 

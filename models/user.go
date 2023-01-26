@@ -24,10 +24,8 @@ func SaveUser(user User) error {
 	}
 
 	defer db.Close()
-	currentTime := time.Now().String()
-	timeTrim := timeConvert(currentTime)
 
-	query := fmt.Sprintf("insert into `quiz-db`.users(username,email,created_at,updated_at,status) values(\"%s\",\"%s\",\"%s\",\"%s\",%d)", user.Username, user.Email, timeTrim, timeTrim, user.Status)
+	query := fmt.Sprintf("insert into `quiz-db`.users(username,email,created_at,updated_at,status) values(\"%s\",\"%s\",\"%s\",\"%s\",%d)", user.Username, user.Email, time.Now().Format(time.RFC3339), time.Now().Format(time.RFC3339), user.Status)
 
 	insert, err := db.Query(query)
 	if err != nil {
@@ -79,21 +77,12 @@ func UpdateUser(user User) error {
 	}
 
 	defer db.Close()
-	currentTime := time.Now().String()
-	timeTrim := timeConvert(currentTime)
 
-	_, err = db.Query("update `quiz-db`.users set username = ? , updated_at = ? where id = ?", user.Username, timeTrim, user.ID)
+	_, err = db.Query("update `quiz-db`.users set username = ? , updated_at = ? where id = ?", user.Username, time.Now().Format(time.RFC3339), user.ID)
 
 	if err != nil {
 		return err
 	}
 
 	return nil
-}
-
-func timeConvert(s string) string {
-	temp := []rune(s)
-
-	newS := temp[:19]
-	return string(newS)
 }

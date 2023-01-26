@@ -16,14 +16,15 @@ func main() {
 	})
 	e.POST("/sign-in", auth.SignIn)
 	e.POST("/sign-up", auth.SignUp)
-	e.POST("/update-user", middlewares.TokenHandle(auth.SignIn))
 
 	e.GET("/get-user/:id", middlewares.TokenHandle(api.GetUser))
-	e.POST("/add-todo", middlewares.TokenHandle(todo.AddTodo))
-	e.PUT("/edit-todo/:id", middlewares.TokenHandle(todo.EditTodo))
-	e.GET("/get-list-todo", middlewares.TokenHandle(todo.GetListTodo))
-	e.GET("/get-todo/:id", middlewares.TokenHandle(todo.GetTodo))
+
+	e.POST("/todo", middlewares.TokenHandle(todo.Create))
+	e.PUT("/todo/:id", middlewares.TokenHandle(todo.Edit))
+	e.GET("/todo", middlewares.TokenHandle(todo.GetList))
+	e.GET("/todo/:id", middlewares.TokenHandle(todo.Get))
 	e.PUT("/check-done/:id", middlewares.TokenHandle(todo.CheckDone))
-	e.DELETE("/delete-todo/:id", middlewares.TokenHandle(todo.DeleteTodo))
+	e.DELETE("/todo/:id", middlewares.TokenHandle(todo.Delete))
+
 	e.Logger.Fatal(e.Start(":8080"))
 }
